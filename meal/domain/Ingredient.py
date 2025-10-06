@@ -1,4 +1,4 @@
-#TODO Ingredient (nume, cantitate, unitate)
+"""Ingredient domain entity: name, unit, default quantity, optional expiration date, tags."""
 from datetime import date, datetime
 from meal.utilities.constants import DATE_FORMAT
 from typing import List, Optional

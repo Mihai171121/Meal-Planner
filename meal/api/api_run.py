@@ -14,15 +14,15 @@ from fastapi import Response
 from fastapi import Body
 from meal.infra.Plan_Repository import PlanRepository
 from meal.infra.pdf_utils import generate_pdf_for_week
-from meal.services.Reporting_Service import compute_week_nutrition  # added import
-from meal.services.pantry_analysis import compute_pantry_snapshots  # added helper import
+from meal.logic.reporting.nutrition import compute_week_nutrition  # moved from services.Reporting_Service
+from meal.logic.pantry.analysis import compute_pantry_snapshots  # moved from services.pantry_analysis
 
 # Fully-qualified imports (run from project root)
 from meal.infra.Plan_Repository import PlanRepository
 from meal.api.routes.recipes import load_recipes
 from meal.api.routes.pantry import load_ingredients, save_ingredients
 from meal.api.routes.logs import load_cooked_recipes, save_cooked_recipes
-from meal.rules.Shopping_List_Builder import build_shopping_list
+from meal.logic.shopping.list_builder import build_shopping_list  # moved from rules.Shopping_List_Builder
 from meal.utilities.constants import DATE_FORMAT
 from meal.events.event_helpers import (
     publish_expiring_snapshot,
@@ -37,7 +37,7 @@ logger = logging.getLogger("meal_app")
 
 ALLOWED_START = _date(2025, 9, 1)
 ALLOWED_END   = _date(2026, 12, 31)
-DEFAULT_EXP_DELTA_DAYS = 7  # numar zile implicit pentru expirare ingrediente noi din buy
+DEFAULT_EXP_DELTA_DAYS = 7  # default extra days for new bought ingredient expiration
 DAY_TO_ISO = {
     "Monday": 1, "Tuesday": 2, "Wednesday": 3,
     "Thursday": 4, "Friday": 5, "Saturday": 6, "Sunday": 7,
@@ -79,7 +79,7 @@ def _ts() -> int:
 
 # -------------------- Helpers --------------------
 def gen_weeks(first_monday: _date, count: int = 12):
-    """Genereaza o lista de saptamani (start/end/label/is_current) pentru dropdown custom."""
+    """Generate a list of weeks (start/end/label/is_current) for the custom dropdown."""
     today = _date.today()
     weeks = []
     for i in range(count):
@@ -95,7 +95,7 @@ def gen_weeks(first_monday: _date, count: int = 12):
 
 # -------------------- UI PAGES --------------------
 @app.get("/", response_class=HTMLResponse)
-def main_page(request: Request, week: Optional[int] = Query(default=None), year: Optional[int] = Query(default=None)):
+def main_page(request: Request, week: Optional[int] = Query(default=None), year: Optional[int] = Query(default=None), notice: Optional[str] = Query(default=None), chg: Optional[int] = Query(default=None)):
     if week is None or year is None:
         today = _date.today()
         iso = today.isocalendar()
@@ -106,7 +106,7 @@ def main_page(request: Request, week: Optional[int] = Query(default=None), year:
 
     recipes = load_recipes()
 
-    # Expiring soon (<= DAYS_BEFORE_EXPIRY zile)
+    # Expiring soon (<= DAYS_BEFORE_EXPIRY days)
     expiring_window = DAYS_BEFORE_EXPIRY
     expiring_soon = []
     low_stock_items = []
@@ -117,6 +117,14 @@ def main_page(request: Request, week: Optional[int] = Query(default=None), year:
         expiring_soon, low_stock_items = [], []
 
     nutrition = compute_week_nutrition(plan, recipes)
+
+    notice_map = {
+        "reset": "Săptămâna a fost resetată.",
+        "random": "Săptămâna a fost randomizată.",
+    }
+    notice_message = notice_map.get(notice)
+    if notice_message and chg is not None:
+        notice_message = f"{notice_message} (Sloturi modificate: {chg})"
     return templates.TemplateResponse(
         "index.html",
         {
@@ -129,6 +137,7 @@ def main_page(request: Request, week: Optional[int] = Query(default=None), year:
             "expiring_window": expiring_window,
             "nutrition": nutrition,
             "current_date": _date.today().strftime("%d.%m.%Y"),  # added for Cook panel visibility condition
+            "notice_message": notice_message,
         }
     )
 
@@ -139,7 +148,7 @@ def meal_plan(request: Request, week: int):
     recipes = load_recipes()
     nutrition = compute_week_nutrition(plan, recipes)
 
-    # Replicam expiring_soon ca pe home
+    # Mirror expiring_soon logic as on home page
     expiring_window = DAYS_BEFORE_EXPIRY
     expiring_soon = []
     low_stock_items = []
@@ -833,7 +842,7 @@ def partial_meal_tbody(request: Request, start: str = Query(...)):
     return resp
 
 def _is_past_calendar_day(day_name: str, week: int, year: int) -> bool:
-    """Returnează True dacă (year, week, day_name) e în trecut față de azi."""
+    """Return True if (year, week, day_name) is before today."""
     try:
         iso_wd = DAY_TO_ISO[day_name]
         target = _date.fromisocalendar(year, week, iso_wd)
@@ -845,13 +854,13 @@ def _is_past_calendar_day(day_name: str, week: int, year: int) -> bool:
 def reset_week(week: int, year: int):
     repo = PlanRepository()
     repo.reset_week(week, year)
-    return RedirectResponse(url=f"/?week={week}&year={year}", status_code=302)
+    return RedirectResponse(url=f"/?week={week}&year={year}&notice=reset", status_code=302)
 
 @app.get("/randomize_week")
 def randomize_week(week: int, year: int):
     repo = PlanRepository()
     repo.randomize_week(week, year)
-    return RedirectResponse(url=f"/?week={week}&year={year}", status_code=302)
+    return RedirectResponse(url=f"/?week={week}&year={year}&notice=random", status_code=302)
 
 @app.get("/export_pdf")
 def export_pdf(week: int, year: int):
@@ -874,7 +883,7 @@ from meal.domain.Ingredient import Ingredient
 def cook_recipe(day: str, meal: str, week: Optional[int] = Query(None), year: Optional[int] = Query(None)):
     repo = PlanRepository()
 
-    # determină week și year dacă lipsesc
+    # determine week/year if missing
     if week is None or year is None:
         today = _date.today()
         iso = today.isocalendar()
@@ -886,7 +895,7 @@ def cook_recipe(day: str, meal: str, week: Optional[int] = Query(None), year: Op
     if not recipe_name or recipe_name == "-":
         return RedirectResponse("/", status_code=303)
 
-    # caută rețeta după nume
+    # find recipe by name
     recipes_data = load_recipes()
     recipe_dict = next((r for r in recipes_data if r.get("name") == recipe_name), None)
     if not recipe_dict:
@@ -895,18 +904,18 @@ def cook_recipe(day: str, meal: str, week: Optional[int] = Query(None), year: Op
     recipe = Recipe.from_dict(recipe_dict)
     available_ingredients = [Ingredient.from_dict(i) for i in load_ingredients()]
 
-    # rulează metoda cook()
+    # execute cook() method
     cooked = recipe.cook(available_ingredients)
 
     if cooked:
-        # marchează în plan
+        # mark cooked in plan
         plan.meals[day][meal] = {"name": recipe.name, "cooked": True, "servings": recipe.servings, "quantity": recipe.servings}
         repo.save_week_plan(week, plan, year)
 
-        # actualizează pantry după consumul ingredientelor
+        # update pantry after consumption
         save_ingredients([i.to_dict() for i in available_ingredients])
 
-        # log opțional
+        # optional log
         cooked_log = load_cooked_recipes()
         cooked_log.append({
             "name": recipe.name,
@@ -1026,3 +1035,15 @@ def api_cook_with_overrides(payload: CookRequest):
     save_cooked_recipes(cooked_log)
 
     return {"success": True, "cooked": {"name": recipe_name, "overrides": overrides_map, "servings": base_recipe.servings}}
+
+class RandomizeCustomRequest(BaseModel):
+    week: int
+    year: int
+    days: list[str] | None = None
+    replace_existing: bool = False
+
+@app.post("/randomize_custom")
+def randomize_custom(payload: RandomizeCustomRequest):
+    repo = PlanRepository()
+    modified = repo.randomize_custom(payload.week, payload.year, payload.days, payload.replace_existing)
+    return {"modified": modified, "week": payload.week, "year": payload.year}

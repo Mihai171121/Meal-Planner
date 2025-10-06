@@ -1,5 +1,6 @@
-"""Helper functions pentru analiza ingredientelor din camara.
-Extrage logica duplicata: expiring_soon si low_stock.
+"""Pantry analysis helpers.
+
+Moved from meal.services.pantry_analysis to meal.logic.pantry.analysis.
 """
 from __future__ import annotations
 from datetime import datetime, date as _date
@@ -9,7 +10,7 @@ from meal.utilities.constants import DATE_FORMAT, LOW_STOCK_THRESHOLD, DAYS_BEFO
 __all__ = ["compute_expiring_soon", "compute_low_stock", "compute_pantry_snapshots"]
 
 def compute_expiring_soon(ingredients: List[Dict[str, Any]], *, window: int | None = None) -> List[Dict[str, Any]]:
-    """Returneaza lista ingredientelor care expira in <= window zile (include deja expirate)."""
+    """Return ingredients expiring in <= window days (including already expired)."""
     expiring_window = window if window is not None else DAYS_BEFORE_EXPIRY
     today = _date.today()
     result: List[Dict[str, Any]] = []
@@ -35,7 +36,7 @@ def compute_expiring_soon(ingredients: List[Dict[str, Any]], *, window: int | No
     return result
 
 def compute_low_stock(ingredients: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Returneaza lista ingredientelor cu stoc sub/prag (inclusiv egal)."""
+    """Return ingredients whose stock is below or equal to the LOW_STOCK_THRESHOLD for their unit."""
     low: List[Dict[str, Any]] = []
     for ing in ingredients:
         try:

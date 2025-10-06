@@ -1,1 +1,0 @@
-#TODO State , MealState (Planned → Cooked → Logged)

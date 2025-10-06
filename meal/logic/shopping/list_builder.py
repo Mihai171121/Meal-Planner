@@ -1,27 +1,26 @@
-#TODO ShoppingListBuilder , Template Method: (pipeline pentru listă)
+"""Shopping list builder.
+
+Moved from meal.rules.Shopping_List_Builder to meal.logic.shopping.list_builder.
+Provides build_shopping_list(plan, recipes, pantry_ingredients, skip_past_days=False).
+"""
 from collections import defaultdict
 from typing import Dict, List, Any
 from datetime import date as _date, datetime
-
 from meal.domain.Plan import Plan
-
 
 def _normalize(name: str) -> str:
     return (name or '').strip().lower()
 
 def _stem(word: str) -> str:
-    # reguli simple pentru plural -> singular (nu perfecte, dar utile aici)
+    # Simple plural to singular heuristics (not perfect, acceptable for this use case)
     if word.endswith('ies') and len(word) > 3:
-
         return word[:-3] + 'y'  # candies -> candy
     if word.endswith('oes') and len(word) > 3:
-        # tomatoes -> tomato, potatoes -> potato
-        return word[:-3] + 'o'
+        return word[:-3] + 'o'  # tomatoes -> tomato, potatoes -> potato
     if word.endswith('ses') and len(word) > 3:
-        return word[:-2]  # classes -> classe (limitare acceptată)
+        return word[:-2]  # classes -> classe (limitation acknowledged)
     if word.endswith('es') and len(word) > 2 and word[-3] not in 'aeiou':
-        # generic fallback: boxes -> box, dishes -> dish (nu tratăm toate excepțiile)
-        return word[:-2]
+        return word[:-2]  # boxes -> box, dishes -> dish
     if word.endswith('s') and not word.endswith('ss') and len(word) > 1:
         return word[:-1]
     return word
@@ -29,29 +28,23 @@ def _stem(word: str) -> str:
 def _key(name: str) -> str:
     return _stem(_normalize(name))
 
-
 def build_shopping_list(plan: Plan, recipes: List[Dict[str, Any]], pantry_ingredients: List[Dict[str, Any]], *, skip_past_days: bool = False):
-    """
-    Calculează lista de cumpărături (ingrediente lipsă) pe baza:
-      - planului săptămânal (Plan)
-      - rețetelor disponibile (lista de dict din recipes.json)
-      - ingredientelor din cămară (Pantry_ingredients.json)
+    """Compute missing ingredients for a weekly plan.
 
-    Returnează o listă de dicționare cu structura:
-        {"name": str, "unit": str, "required": int, "have": int, "missing": int}
-    Doar ingredientele cu missing > 0 sunt incluse.
+    Args:
+        plan: Plan instance containing week meals.
+        recipes: List of recipe dicts (name, ingredients, etc.).
+        pantry_ingredients: List of pantry ingredient dicts.
+        skip_past_days: If True, meals whose date < today are ignored.
 
-    Potrivirea se face case-insensitive și încearcă să unifice forme plural/singular simple.
-
-    Parametri nou:
-      skip_past_days: dacă True și plan-ul conține câmpul 'date' pe fiecare zi (format dd.mm.YYYY),
-                      mesele ale căror date sunt < astăzi sunt ignorate (util pentru săptămâna curentă după ce unele zile au trecut).
+    Returns:
+        Sorted list of dicts: { name, unit, required, have, missing } (only missing > 0).
     """
     if not plan or not recipes:
         return []
 
     today = _date.today()
-    recipe_index: Dict[str, Dict[str, Any]] = {_normalize(r.get('name', '')): r for r in recipes}
+    recipe_index: Dict[str, Dict[str, Any]] = { _normalize(r.get('name', '')): r for r in recipes }
 
     required: Dict[str, Dict[str, Any]] = defaultdict(lambda: {"unit": "", "quantity": 0, "display_name": ""})
 
@@ -120,5 +113,5 @@ def build_shopping_list(plan: Plan, recipes: List[Dict[str, Any]], pantry_ingred
     shopping_list.sort(key=lambda x: x['name'].lower())
     return shopping_list
 
-
 __all__ = ['build_shopping_list']
+

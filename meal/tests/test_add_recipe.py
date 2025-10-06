@@ -6,15 +6,13 @@ from meal.api.routes import add
 
 @pytest.mark.asyncio
 async def test_add_recipe_and_prevent_duplicate(tmp_path, monkeypatch):
-    """
-    Testează că pot adăuga o rețetă și că o a doua cu același nume e respinsă.
-    """
+    """Test adding a recipe and preventing a duplicate with the same name."""
 
-    # Folosim un fișier temporar pentru recipes.json (ca să nu stricăm cel real)
+    # Use a temporary file for recipes.json (don't alter the real one)
     fake_recipes = tmp_path / "recipes.json"
     monkeypatch.setattr(add, "RECIPES_FILE", str(fake_recipes))
 
-    # === 1. Prima adăugare (trebuie să meargă) ===
+    # === 1. First add (should succeed) ===
     async with AsyncClient(app=add.app, base_url="http://test") as ac:
         resp1 = await ac.post(
             "/recipes",
@@ -32,7 +30,7 @@ async def test_add_recipe_and_prevent_duplicate(tmp_path, monkeypatch):
     data1 = resp1.json()
     assert data1["status"] == "success"
 
-    # === 2. A doua adăugare cu același nume (trebuie să fie respinsă) ===
+    # === 2. Second add with same name (should be rejected) ===
     async with AsyncClient(app=add.app, base_url="http://test") as ac:
         resp2 = await ac.post(
             "/recipes",

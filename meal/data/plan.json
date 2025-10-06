@@ -223,28 +223,39 @@
   },
   "2025-W41": {
     "Monday": {
-      "breakfast": "-",
-      "lunch": "Chicken Curry",
-      "dinner": "-"
+      "breakfast": {
+        "name": "Pancakes",
+        "cooked": true,
+        "overrides": {
+          "Flour": 200,
+          "Milk": 300,
+          "Egg": 2,
+          "Sugar": 20
+        },
+        "servings": 4,
+        "quantity": 4
+      },
+      "lunch": "Tomato Soup",
+      "dinner": "Spaghetti Carbonara"
     },
     "Tuesday": {
-      "breakfast": "Vegetable Stir Fry",
+      "breakfast": "-",
       "lunch": "-",
       "dinner": "-"
     },
     "Wednesday": {
       "breakfast": "-",
       "lunch": "-",
-      "dinner": "Chicken Curry"
+      "dinner": "-"
     },
     "Thursday": {
       "breakfast": "-",
       "lunch": "-",
-      "dinner": "Spaghetti Bolognese"
+      "dinner": "-"
     },
     "Friday": {
       "breakfast": "-",
-      "lunch": "Chicken Curry",
+      "lunch": "-",
       "dinner": "-"
     },
     "Saturday": {

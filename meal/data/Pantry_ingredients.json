@@ -38,19 +38,10 @@
   {
     "name": "Eggs",
     "unit": "pcs",
-    "default_quantity": 12,
+    "default_quantity": 10,
     "data_expirare": "20-10-2025",
     "tags": [
       "dairy"
-    ]
-  },
-  {
-    "name": "Chicken Breast",
-    "unit": "g",
-    "default_quantity": 500,
-    "data_expirare": "24-09-2025",
-    "tags": [
-      "meat-chicken"
     ]
   },
   {
@@ -76,15 +67,6 @@
     "unit": "pcs",
     "default_quantity": 6,
     "data_expirare": "29-09-2025",
-    "tags": [
-      "vegetables"
-    ]
-  },
-  {
-    "name": "Onion",
-    "unit": "pcs",
-    "default_quantity": 3,
-    "data_expirare": "21-11-2025",
     "tags": [
       "vegetables"
     ]
@@ -119,7 +101,7 @@
   {
     "name": "Milk",
     "unit": "ml",
-    "default_quantity": 1000,
+    "default_quantity": 700,
     "data_expirare": "29-09-2025",
     "tags": [
       "dairy"
@@ -137,7 +119,7 @@
   {
     "name": "Flour",
     "unit": "g",
-    "default_quantity": 1000,
+    "default_quantity": 800,
     "data_expirare": "22-09-2026",
     "tags": [
       "baking"
@@ -182,7 +164,7 @@
   {
     "name": "Sugar",
     "unit": "g",
-    "default_quantity": 1000,
+    "default_quantity": 980,
     "data_expirare": "22-09-2030",
     "tags": [
       "condiment"
@@ -258,6 +240,15 @@
     "data_expirare": "22-09-2027",
     "tags": [
       "sauce"
+    ]
+  },
+  {
+    "name": "Egg",
+    "unit": "pcs",
+    "default_quantity": 2,
+    "data_expirare": "13-10-2025",
+    "tags": [
+      "dairy"
     ]
   }
 ]

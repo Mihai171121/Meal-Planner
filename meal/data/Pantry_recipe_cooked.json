@@ -24,16 +24,93 @@
     "unit": "pcs"
   },
   {
-    "name": "Spaghetti Bolognese",
-    "date_cooked": "02-10-2025",
-    "day": "Thursday",
-    "meal": "dinner",
+    "name": "Chicken Curry",
+    "date_cooked": "06-10-2025",
+    "day": "Monday",
+    "meal": "breakfast",
     "overrides": {
-      "Spaghetti": 400,
-      "Ground beef": 500,
-      "Tomato sauce": 500,
-      "Onion": 1,
-      "Garlic": 2
-    }
+      "Chicken breast": 500,
+      "Coconut milk": 400,
+      "Curry paste": 50,
+      "Onion": 1
+    },
+    "servings": 4,
+    "quantity": 4,
+    "unit": "pcs"
+  },
+  {
+    "name": "Chicken Curry",
+    "date_cooked": "06-10-2025",
+    "day": "Monday",
+    "meal": "breakfast",
+    "overrides": {
+      "Chicken breast": 500,
+      "Coconut milk": 400,
+      "Curry paste": 50,
+      "Onion": 1
+    },
+    "servings": 4,
+    "quantity": 4,
+    "unit": "pcs"
+  },
+  {
+    "name": "Chicken Curry",
+    "date_cooked": "06-10-2025",
+    "day": "Monday",
+    "meal": "breakfast",
+    "overrides": {
+      "Chicken breast": 500,
+      "Coconut milk": 400,
+      "Curry paste": 50,
+      "Onion": 1
+    },
+    "servings": 4,
+    "quantity": 4,
+    "unit": "pcs"
+  },
+  {
+    "name": "Chicken Curry",
+    "date_cooked": "06-10-2025",
+    "day": "Monday",
+    "meal": "breakfast",
+    "overrides": {
+      "Chicken breast": 500,
+      "Coconut milk": 400,
+      "Curry paste": 50,
+      "Onion": 1
+    },
+    "servings": 4,
+    "quantity": 4,
+    "unit": "pcs"
+  },
+  {
+    "name": "Chicken Curry",
+    "date_cooked": "06-10-2025",
+    "day": "Monday",
+    "meal": "breakfast",
+    "overrides": {
+      "Chicken breast": 500,
+      "Coconut milk": 400,
+      "Curry paste": 50,
+      "Onion": 1
+    },
+    "servings": 4,
+    "quantity": 4,
+    "unit": "pcs"
+  },
+  {
+    "name": "Pancakes",
+    "date_cooked": "06-10-2025",
+    "day": "Monday",
+    "meal": "breakfast",
+    "overrides": {
+      "Flour": 200,
+      "Milk": 300,
+      "Egg": 2,
+      "Sugar": 20
+    },
+    "servings": 4,
+    "quantity": 4,
+    "unit": "pcs"
   }
 ]

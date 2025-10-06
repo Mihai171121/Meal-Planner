@@ -47,8 +47,7 @@ meal/
   api/              # FastAPI application + routes (UI + JSON helpers)
   domain/           # Core business entities (Ingredient, Recipe, Plan, etc.)
   infra/            # File-based repositories & PDF utilities
-  rules/            # Business rules (shopping list builder, strategies)
-  services/         # Higher-level service orchestration (logging, reporting)
+  logic/            # Consolidated business logic (shopping, reporting, pantry analysis)
   events/           # Event bus + web observers
   utilities/        # Constants & helpers
   static/           # JS, CSS, images, thumbnails
@@ -264,4 +263,3 @@ Generate a shopping list: http://localhost:8000/shopping-list
 
 ---
 Enjoy building and extending your Meal Planner! 🍽️
-

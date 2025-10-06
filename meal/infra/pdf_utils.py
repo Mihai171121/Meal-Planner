@@ -1,4 +1,3 @@
-
 import io
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -6,9 +5,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 
 def generate_pdf_for_week(plan):
-    """
-    Generează un PDF simplu cu Day / Breakfast / Lunch / Dinner.
-    """
+    """Generate a simple PDF table: Day / Breakfast / Lunch / Dinner for the provided plan."""
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
         buf, pagesize=landscape(A4),

@@ -1,9 +1,9 @@
+"""Nutrition aggregation logic.
+
+Moved from meal.services.Reporting_Service to meal.logic.reporting.nutrition.
+"""
 from collections import defaultdict
 from typing import Dict, Any, List
-
-# Structure expected for plan.meals:
-# plan.meals[day] = { 'date': 'dd.mm.yyyy', 'breakfast': 'RecipeName' | '-', 'lunch': 'RecipeName', 'dinner': 'RecipeName' }
-# Recipes list: each recipe is a dict with keys: name, calories_per_serving, macros{ protein, carbohydrates|carbs, fats }
 
 def _normalize_macros(macros: Dict[str, Any]):
     if not isinstance(macros, dict):
@@ -15,13 +15,13 @@ def _normalize_macros(macros: Dict[str, Any]):
     }
 
 def compute_week_nutrition(plan, recipes: List[dict]):
-    """
-    Returns aggregated nutrition stats for the given plan & recipe catalog.
-    Output shape:
+    """Aggregate nutrition stats for the given week plan.
+
+    Returns structure:
     {
       'days': {
          'Monday': {'date': 'dd.mm.yyyy', 'calories': int, 'protein': g, 'carbs': g, 'fats': g,
-                     'meals': { 'breakfast': { 'name': str, 'calories': int, 'protein': g, 'carbs': g, 'fats': g }, ... }},
+                    'meals': { 'breakfast': { 'name': str, 'calories': int, 'protein': g, 'carbs': g, 'fats': g }, ... }},
          ...
       },
       'week_totals': { 'calories': int, 'protein': g, 'carbs': g, 'fats': g }
@@ -30,9 +30,7 @@ def compute_week_nutrition(plan, recipes: List[dict]):
     if not plan or not getattr(plan, 'meals', None):
         return { 'days': {}, 'week_totals': { 'calories': 0, 'protein': 0, 'carbs': 0, 'fats': 0 } }
 
-    # Index recipes by lower-case name for quick lookup
     recipe_index = { (r.get('name') or '').lower(): r for r in recipes }
-
     days_result = {}
     totals = defaultdict(int)
 
@@ -64,7 +62,6 @@ def compute_week_nutrition(plan, recipes: List[dict]):
             day_pro += macros_norm['protein']
             day_carbs += macros_norm['carbs']
             day_fats += macros_norm['fats']
-        # Accumulate day
         days_result[day] = {
             'date': meals.get('date'),
             'calories': day_cal,
@@ -87,4 +84,6 @@ def compute_week_nutrition(plan, recipes: List[dict]):
             'fats': totals['fats'],
         }
     }
+
+__all__ = ["compute_week_nutrition"]
 

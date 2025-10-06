@@ -1,16 +1,16 @@
 """Simple Event Bus / Observer implementation for pantry alerts.
 
-Events names used so far:
+Event names used so far:
   pantry.low_stock -> payload {"ingredient": Ingredient, "remaining": int, "threshold": int}
   pantry.near_expiry -> payload {"ingredient": Ingredient, "days_left": int, "threshold": int}
 
-Subscriberi pot fi funcții (callable) sau obiecte cu metoda handle_event(event_name, payload)
+Subscribers can be callables or objects exposing handle_event(event_name, payload).
 """
 from __future__ import annotations
 from collections import defaultdict
 from typing import Callable, Any, Dict, List
 
-# --- Event name constants (folosite in alte module) ---
+# --- Event name constants (used across modules) ---
 PANTRY_LOW_STOCK = "pantry.low_stock"
 PANTRY_NEAR_EXPIRY = "pantry.near_expiry"
 PANTRY_EXPIRING_SNAPSHOT = "pantry.expiring_snapshot"
@@ -48,7 +48,7 @@ def simple_print_listener(event_name: str, payload: Any):  # Example listener
 
 # Helper scurt pentru publicare evenimente din alte module
 def crea(event_name: str, payload: Any = None) -> None:
-	"""Publică un eveniment pe busul global (sugar function)."""
+	"""Publish an event on the global bus (sugar function)."""
 	GLOBAL_EVENT_BUS.publish(event_name, payload)
 
 

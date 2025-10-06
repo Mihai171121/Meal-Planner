@@ -1,9 +1,9 @@
 """Event helper utilities.
 
-Acest modul oferă functii dedicate pentru publicarea evenimentelor
-legate de camara (pantry), folosind busul global.
+This module provides helper functions for publishing pantry-related events
+using the global event bus.
 
-Import rapid:
+Quick import:
     from meal.events.event_helpers import (
         publish_low_stock, publish_near_expiry, publish_expiring_snapshot,
         PANTRY_LOW_STOCK, PANTRY_NEAR_EXPIRY, PANTRY_EXPIRING_SNAPSHOT
@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 def publish_low_stock(ingredient: Any, remaining: int, threshold: int):
-    """Publică un eveniment pantry.low_stock."""
+    """Publish a pantry.low_stock event."""
     crea(PANTRY_LOW_STOCK, {
         'ingredient': ingredient,
         'remaining': remaining,
@@ -33,7 +33,7 @@ def publish_low_stock(ingredient: Any, remaining: int, threshold: int):
     })
 
 def publish_near_expiry(ingredient: Any, days_left: int, threshold: int):
-    """Publică un eveniment pantry.near_expiry."""
+    """Publish a pantry.near_expiry event."""
     crea(PANTRY_NEAR_EXPIRY, {
         'ingredient': ingredient,
         'days_left': days_left,
@@ -41,11 +41,11 @@ def publish_near_expiry(ingredient: Any, days_left: int, threshold: int):
     })
 
 def publish_expiring_snapshot(items: Iterable[dict]):
-    """Publică un snapshot cu ingredientele care expiră curând.
+    """Publish a snapshot of ingredients that will expire soon.
 
-    Payload:
+    Payload structure:
         {
-          'count': <numar>,
+          'count': <int>,
           'items': [ { name, quantity, unit, exp, days_left, tag }, ... ]
         }
     """
@@ -55,11 +55,10 @@ def publish_expiring_snapshot(items: Iterable[dict]):
         'items': items_list
     })
 
-# Exemplu de subscriber opțional (nu este înregistrat implicit)
+# Optional debug subscriber (not registered by default)
 
 def _debug_listener(event_name: str, payload):  # pragma: no cover (debug utility)
     print(f'[EVENT DEBUG] {event_name}: {payload}')
 
-# Pentru a activa debug global: decomentează linia următoare
+# Uncomment below to enable global debug of expiring snapshot events
 # GLOBAL_EVENT_BUS.subscribe(PANTRY_EXPIRING_SNAPSHOT, _debug_listener)
-

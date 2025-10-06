@@ -17,7 +17,7 @@ PICTURES_DIR = os.path.join(STATIC_DIR, "pictures")
 TEMPLATES_DIR = os.path.join(MEAL_DIR, "templates")
 RECIPES_FILE = os.path.join(MEAL_DIR, "data", "recipes.json")
 
-# Asigură-te că există folderul pentru poze
+# Ensure pictures directory exists
 os.makedirs(PICTURES_DIR, exist_ok=True)
 
 
@@ -55,7 +55,7 @@ async def get_add_recipe():
     return FileResponse(os.path.join(TEMPLATES_DIR, "add_recipe.html"))
 
 
-# === Salvare rețetă cu upload ===
+# === Save recipe with upload ===
 @router.post("/recipes")
 async def add_recipe(
     name: str = Form(...),
@@ -69,7 +69,7 @@ async def add_recipe(
     if any(r["name"].lower() == name.strip().lower() for r in recipes):
         return JSONResponse(status_code=400, content={"error": "Recipe with this name already exists"})
 
-    # --- salvăm imaginea dacă există ---
+    # --- save image if provided ---
     image_filename = ""
     if image is not None:
         if not image.content_type.startswith("image/"):
@@ -79,17 +79,17 @@ async def add_recipe(
         with open(file_path, "wb") as f:
             f.write(await image.read())
 
-    # --- convertim ingredients din JSON string în listă ---
+    # --- convert ingredients JSON string into list ---
     try:
         ingredients_obj = json.loads(ingredients)
     except:
         ingredients_obj = []
 
-    # --- parse tags și steps ---
+    # --- parse tags and steps ---
     steps_list = [s.strip() for s in steps.split("\n") if s.strip()]
     tags_list = [t.strip() for t in tags.split(",") if t.strip()]
 
-    # --- pregătim Spoonacular payload ---
+    # --- prepare Spoonacular payload ---
     def _fmt_ing(ing):
         unit = ing.get("unit", "").strip()
         qty = ing.get("default_quantity", 0)
@@ -127,7 +127,7 @@ async def add_recipe(
         "ingredients": ingredients_obj,
         "steps": steps_list,
         "tags": tags_list,
-        "image": image_filename,  # doar numele fișierului
+        "image": image_filename,  # only file name
         "calories_per_serving": macros.get("Calories", 0),
         "macros": {
             "protein": macros.get("Protein", 0),
@@ -154,7 +154,7 @@ def dbg_recipes():
     return _safe_load_recipes()
 
 
-# === Montare statică ===
+# === Static mount ===
 app = FastAPI(title="Add Recipe Module")
 app.include_router(router)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

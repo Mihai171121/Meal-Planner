@@ -1,4 +1,5 @@
-#TODO ShoppingList (items care trebuie cumpărate)
+"""ShoppingList aggregate: list of items to purchase (extends Pantry for reuse)."""
+
 from meal.domain.Ingredient import Ingredient
 from meal.domain.Pantry import Pantry
 

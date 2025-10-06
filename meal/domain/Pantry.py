@@ -1,4 +1,4 @@
-#TODO PantryItem (nume, cantitate, unitate, expirare opțională)
+"""Pantry aggregate: collection of Ingredient items with optional expiration tracking."""
 import json
 import os
 from datetime import date
@@ -22,7 +22,7 @@ class Pantry:
         self._event_bus.publish("pantry.low_stock", {
             "ingredient": ingredient,
             "remaining": ingredient.default_quantity,
-            "threshold": LOW_STOCK_THRESHOLD.get(ingredient.unit,0)
+            "threshold": LOW_STOCK_THRESHOLD.get(ingredient.unit, 0)
         })
 
     def _notify_near_expiry(self, ingredient: Ingredient, days_left: int):
@@ -65,7 +65,7 @@ class Pantry:
     # --- Evaluation logic --------------------------------------------------
     def _evaluate_item(self, item: Ingredient):
         # Low stock check
-        if item.default_quantity <= LOW_STOCK_THRESHOLD.get(item.unit,0):
+        if item.default_quantity <= LOW_STOCK_THRESHOLD.get(item.unit, 0):
             self._notify_low_stock(item)
         # Expiry check
         if getattr(item, 'data_expirare', None):
@@ -78,21 +78,21 @@ class Pantry:
         for item in self.items:
             self._evaluate_item(item)
         return self
-        
+
     def get_items(self):
         '''
         Returns the list of pantry items.
         '''
         return self.items
-    
+
     def __str__(self) -> str:
         items_str = ",\n\t".join(str(item) for item in self.items)
         return f"Items:\n\t{items_str}"
 
     def __repr__(self) -> str:
         return self.__str__()
-    
-    def from_dict(self,data):
+
+    def from_dict(self, data):
         '''
         Populates the Pantry object from a list of dictionaries.
         '''
@@ -100,20 +100,20 @@ class Pantry:
             # add_item already triggers evaluation
             self.add_item(Ingredient.from_dict(item_data))
         return self
-    
+
     def to_dict(self):
         '''
         Converts the Pantry object to a list of dictionaries.
         '''
         return [item.to_dict() for item in self.items]
-    
+
     def read_from_json(self, file_name: str):
         '''
         Reads pantry items from a JSON file and populates the pantry.
         file_name: Name of the JSON file (without .json extension) located in the data directory.
         '''
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        json_path = os.path.join(base_dir, '..', 'data', file_name+'.json')
+        json_path = os.path.join(base_dir, '..', 'data', file_name + '.json')
         try:
             with open(json_path, 'r', encoding='utf-8') as f:
                 ingredient_data = json.load(f)
