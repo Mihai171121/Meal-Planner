@@ -5,7 +5,7 @@ from meal.domain.Pantry import Pantry
 from meal.domain.Recipe import Recipe
 from meal.domain.RecipeCooked import RecipeCooked
 
-class TestPantry(unittest.TestCase):
+class TestRecipe(unittest.TestCase):
 
     def setUp(self):
         self.recipe_pancakes = Recipe(
@@ -42,9 +42,6 @@ class TestPantry(unittest.TestCase):
 
     def test_cook(self):
         recipe_cooked = self.recipe_pancakes.cook(self.pantry.get_items())
-        self.assertTrue(recipe_cooked, RecipeCooked("Pancakes", 4, "servings", date.today(), ["breakfast", "vegetarian"], 500))
+        self.assertTrue(recipe_cooked)
         recipe_cooked = self.recipe_omelette.cook(self.pantry.get_items())
-        self.assertFalse(recipe_cooked, RecipeCooked("Omelette", 2, "servings", date.today(), ["breakfast", "vegetarian"], 400))
-
-if __name__ == "__main__":
-    unittest.main()
+        self.assertFalse(recipe_cooked)

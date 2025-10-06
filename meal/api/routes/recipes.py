@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Response
 from meal.infra.Recipe_Repository import reading_from_recipes
-from pathlib import Path
+from meal.infra.paths import RECIPES_FILE
 import json
 
 router = APIRouter()
 
 def load_recipes():
-    json_path = (Path(__file__).parent.parent.parent / 'data' / 'recipes.json').resolve()
-    with open(json_path, encoding='utf-8') as f:
+    with open(RECIPES_FILE, encoding='utf-8') as f:
         return json.load(f)
 
 @router.get("/", response_class=Response)

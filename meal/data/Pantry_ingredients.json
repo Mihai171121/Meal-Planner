@@ -2,7 +2,7 @@
   {
     "name": "Spaghetti",
     "unit": "g",
-    "default_quantity": 100,
+    "default_quantity": 500,
     "data_expirare": "22-03-2027",
     "tags": [
       "pasta"

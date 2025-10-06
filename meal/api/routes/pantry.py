@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+from meal.infra.paths import PANTRY_FILE
 
 ALLOWED_TAGS = [
     'fruits','vegetables','meat-chicken','meat-beef','meat-pork','pasta','frozen','fish'
@@ -29,8 +30,7 @@ def _sanitize_ingredient(ing: dict):
     return ing
 
 def load_ingredients():
-    json_path = (Path(__file__).parent.parent.parent / 'data' / 'Pantry_ingredients.json').resolve()
-    with open(json_path, encoding='utf-8') as f:
+    with open(PANTRY_FILE, encoding='utf-8') as f:
         ingredients = json.load(f)
     changed = False
     for ing in ingredients:
@@ -48,6 +48,5 @@ def save_ingredients(ingredients):
     for ing in ingredients:
         if isinstance(ing, dict):
             sanitized.append(_sanitize_ingredient(ing))
-    json_path = (Path(__file__).parent.parent.parent / 'data' / 'Pantry_ingredients.json').resolve()
-    with open(json_path, 'w', encoding='utf-8') as f:
+    with open(PANTRY_FILE, 'w', encoding='utf-8') as f:
         json.dump(sanitized, f, ensure_ascii=False, indent=2)

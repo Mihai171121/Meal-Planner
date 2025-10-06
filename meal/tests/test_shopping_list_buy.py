@@ -52,6 +52,4 @@ class TestShoppingListBuy(unittest.TestCase):
             if ln in remaining and ln in orig_map:
                 self.assertLessEqual(remaining[ln]['missing'], orig_map[ln]['missing'])
 
-if __name__ == '__main__':
-    unittest.main()
-
+# Removed unittest.main() for pytest compatibility

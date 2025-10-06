@@ -27,6 +27,3 @@ class TestRecipeDetail(unittest.TestCase):
         self.assertEqual(resp.status_code, 404)
         data = resp.json()
         self.assertEqual(data.get('detail'), 'Recipe not found')
-
-if __name__ == '__main__':
-    unittest.main()

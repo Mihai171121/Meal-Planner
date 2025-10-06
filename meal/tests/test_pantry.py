@@ -26,7 +26,3 @@ class TestPantry(unittest.TestCase):
         self.pantry.add_item(ingredient1)
         self.pantry.add_item(ingredient2)
         self.assertEqual(self.pantry.get_items(), [ingredient1, ingredient2])
-
-
-if __name__ == "__main__":
-    unittest.main()

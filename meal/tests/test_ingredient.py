@@ -11,8 +11,3 @@ class TestIngredient(unittest.TestCase):
         self.assertEqual(ingredient.default_quantity, 150)
         ingredient.set_quantity(-30)
         self.assertEqual(ingredient.default_quantity, 120)
-
-    
-
-if __name__ == "__main__":
-    unittest.main()

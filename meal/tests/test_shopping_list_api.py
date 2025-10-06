@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 from meal.api.api_run import app
 from meal.infra.Plan_Repository import PlanRepository
 from datetime import date
+
 class TestShoppingListAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -15,11 +16,7 @@ class TestShoppingListAPI(unittest.TestCase):
         repo = PlanRepository()
         plan = repo.get_week_plan(week)
 
-        # Setăm rețetele necesare pentru a reproduce așteptările testului:
-        #  - 3x Chicken Curry (pentru deficit Chicken breast)
-        #  - 1x Vegetable Stir Fry (Bell pepper lipsă din pantry -> trebuie să apară)
-        #  - 1x Spaghetti Bolognese (Spaghetti există suficient și nu trebuie să apară ca missing)
-        # Curățăm întâi zilele pentru a avea control:
+        # Reset plan meals for deterministic test context
         for day, meals in plan.meals.items():
             meals['breakfast'] = '-'
             meals['lunch'] = '-'
@@ -33,7 +30,6 @@ class TestShoppingListAPI(unittest.TestCase):
             plan.meals[days[3]]['dinner'] = 'Spaghetti Bolognese'
             plan.meals[days[4]]['lunch'] = 'Chicken Curry'
         else:
-            # fallback (teoretic nu ar trebui, dar mențin robust)
             first = days[0]
             plan.meals[first]['breakfast'] = 'Vegetable Stir Fry'
             plan.meals[first]['lunch'] = 'Chicken Curry'
@@ -57,8 +53,9 @@ class TestShoppingListAPI(unittest.TestCase):
         bell = [i for i in items if i['name'].lower() == 'bell pepper']
         self.assertTrue(bell, 'Bell pepper should be missing (not in pantry).')
         # Spaghetti nu trebuie să apară (avem 500, cerință 400)
-        # Spaghetti nu trebuie să apară (avem 500, cerință 400)
-        # Chicken breast trebuie să fie missing cu 1000 (1500 necesar - 500 existent)
+        spaghetti = [i for i in items if i['name'].lower() == 'spaghetti']
         self.assertFalse(spaghetti, 'Spaghetti should not be missing (pantry has enough).')
         # Chicken breast trebuie să fie missing cu 1000 (1500 necesar - 500 existent)
-    unittest.main()
+        # (Potential future assertion for Chicken breast deficit could be added here)
+
+# Removed direct unittest.main() call to allow pytest discovery

@@ -15,6 +15,7 @@ from fastapi import Body
 from meal.infra.Plan_Repository import PlanRepository
 from meal.infra.pdf_utils import generate_pdf_for_week
 from meal.services.Reporting_Service import compute_week_nutrition  # added import
+from meal.services.pantry_analysis import compute_pantry_snapshots  # added helper import
 
 # Fully-qualified imports (run from project root)
 from meal.infra.Plan_Repository import PlanRepository
@@ -108,54 +109,12 @@ def main_page(request: Request, week: Optional[int] = Query(default=None), year:
     # Expiring soon (<= DAYS_BEFORE_EXPIRY zile)
     expiring_window = DAYS_BEFORE_EXPIRY
     expiring_soon = []
+    low_stock_items = []
     try:
         ingredients_home = load_ingredients()
-        today = _date.today()
-        for ing in ingredients_home:
-            exp_str = ing.get('data_expirare')
-            if not exp_str:
-                continue
-            try:
-                exp_date = datetime.strptime(exp_str, DATE_FORMAT).date()
-                days_left = (exp_date - today).days
-                # includem și expiratele (days_left < 0) dar le marcăm separat în UI
-                if days_left <= expiring_window:
-                    expiring_soon.append({
-                        'name': ing.get('name', ''),
-                        'quantity': ing.get('default_quantity', ''),
-                        'unit': ing.get('unit', ''),
-                        'exp': exp_str,
-                        'days_left': days_left,
-                        'tag': (ing.get('tags') or [''])[0]
-                    })
-            except Exception:
-                continue
-        expiring_soon.sort(key=lambda x: (x['days_left'], x['name']))
+        expiring_soon, low_stock_items = compute_pantry_snapshots(ingredients_home, window=expiring_window)
     except Exception:
-        expiring_soon = []
-
-    # Low stock snapshot
-    low_stock_items: list[dict] = []
-    try:
-        ingredients_ls = load_ingredients()
-        for ing in ingredients_ls:
-            try:
-                q = int(ing.get('default_quantity') or 0)
-            except Exception:
-                q = 0
-            unit = ing.get('unit','')
-            th = LOW_STOCK_THRESHOLD.get(unit, 0)
-            if th > 0 and q <= th:
-                low_stock_items.append({
-                    'name': ing.get('name',''),
-                    'quantity': q,
-                    'unit': unit,
-                    'threshold': th,
-                    'tag': (ing.get('tags') or [''])[0]
-                })
-        low_stock_items.sort(key=lambda x: (x['quantity'], x['name']))
-    except Exception:
-        low_stock_items = []
+        expiring_soon, low_stock_items = [], []
 
     nutrition = compute_week_nutrition(plan, recipes)
     return templates.TemplateResponse(
@@ -183,53 +142,12 @@ def meal_plan(request: Request, week: int):
     # Replicam expiring_soon ca pe home
     expiring_window = DAYS_BEFORE_EXPIRY
     expiring_soon = []
+    low_stock_items = []
     try:
         ingredients_home = load_ingredients()
-        today = _date.today()
-        for ing in ingredients_home:
-            exp_str = ing.get('data_expirare')
-            if not exp_str:
-                continue
-            try:
-                exp_date = datetime.strptime(exp_str, DATE_FORMAT).date()
-                days_left = (exp_date - today).days
-                if days_left <= expiring_window:
-                    expiring_soon.append({
-                        'name': ing.get('name', ''),
-                        'quantity': ing.get('default_quantity', ''),
-                        'unit': ing.get('unit', ''),
-                        'exp': exp_str,
-                        'days_left': days_left,
-                        'tag': (ing.get('tags') or [''])[0]
-                    })
-            except Exception:
-                continue
-        expiring_soon.sort(key=lambda x: (x['days_left'], x['name']))
+        expiring_soon, low_stock_items = compute_pantry_snapshots(ingredients_home, window=expiring_window)
     except Exception:
-        expiring_soon = []
-
-    # Low stock snapshot (same logic as home)
-    low_stock_items: list[dict] = []
-    try:
-        ingredients_ls = load_ingredients()
-        for ing in ingredients_ls:
-            try:
-                q = int(ing.get('default_quantity') or 0)
-            except Exception:
-                q = 0
-            unit = ing.get('unit','')
-            th = LOW_STOCK_THRESHOLD.get(unit, 0)
-            if th > 0 and q <= th:
-                low_stock_items.append({
-                    'name': ing.get('name',''),
-                    'quantity': q,
-                    'unit': unit,
-                    'threshold': th,
-                    'tag': (ing.get('tags') or [''])[0]
-                })
-        low_stock_items.sort(key=lambda x: (x['quantity'], x['name']))
-    except Exception:
-        low_stock_items = []
+        expiring_soon, low_stock_items = [], []
 
     return templates.TemplateResponse(
         "index.html",
@@ -407,69 +325,16 @@ def recipes_page(request: Request, tag: str = Query(default="", alias="tag")):
 def camara_page(request: Request):
     ingredients = load_ingredients()
     cooked_recipes = load_cooked_recipes()
-
-    # Compute expiring soon (<= DAYS_BEFORE_EXPIRY zile); trimitem si eveniment non-critical
-    expiring_window = DAYS_BEFORE_EXPIRY
-    expiring_soon = []
-    today = _date.today()
-    for ing in ingredients:
-        exp_str = ing.get('data_expirare')
-        if not exp_str:
-            continue
-        try:
-            exp_date = datetime.strptime(exp_str, DATE_FORMAT).date()
-            days_left = (exp_date - today).days
-            if days_left <= expiring_window:
-                expiring_soon.append({
-                    'name': ing.get('name', ''),
-                    'quantity': ing.get('default_quantity', ''),
-                    'unit': ing.get('unit', ''),
-                    'exp': exp_str,
-                    'days_left': days_left,
-                    'tag': (ing.get('tags') or [''])[0]
-                })
-        except Exception:
-            continue
-    expiring_soon.sort(key=lambda x: (x['days_left'], x['name']))
-
+    expiring_soon, low_stock_items = compute_pantry_snapshots(ingredients, window=DAYS_BEFORE_EXPIRY)
     try:
         publish_expiring_snapshot(expiring_soon)
     except Exception:
         pass
-
-    # Low stock snapshot (use already loaded ingredients)
-    low_stock_items: list[dict] = []
-    try:
-        for ing in ingredients:
-            try:
-                q = int(ing.get('default_quantity') or 0)
-            except Exception:
-                q = 0
-            unit = ing.get('unit','')
-            th = LOW_STOCK_THRESHOLD.get(unit, 0)
-            if th > 0 and q <= th:
-                low_stock_items.append({
-                    'name': ing.get('name',''),
-                    'quantity': q,
-                    'unit': unit,
-                    'threshold': th,
-                    'tag': (ing.get('tags') or [''])[0]
-                })
-        low_stock_items.sort(key=lambda x: (x['quantity'], x['name']))
-    except Exception:
-        low_stock_items = []
-
     return templates.TemplateResponse(
         "camara.html",
-        {
-            "request": request,
-            "ingredients": ingredients,
-            "cooked_recipes": cooked_recipes,
-            "expiring_soon": expiring_soon,
-            "low_stock_items": low_stock_items,
-            "time": _ts(),
-            "expiring_window": expiring_window
-        }
+        {"request": request, "ingredients": ingredients, "cooked_recipes": cooked_recipes,
+         "expiring_soon": expiring_soon, "low_stock_items": low_stock_items, "time": _ts(),
+         "expiring_window": DAYS_BEFORE_EXPIRY}
     )
 
 @app.get("/camara/edit", response_class=HTMLResponse)
