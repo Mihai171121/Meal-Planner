@@ -1,0 +1,1 @@
+#TODO LogEntry (zi, masă, status, leftover-uri)

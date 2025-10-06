@@ -1,0 +1,1 @@
+#TODO LoggingService – marchează mese ca gătite și actualizează pantry

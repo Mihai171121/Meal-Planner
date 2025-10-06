@@ -1,0 +1,5 @@
+la ce trebuie sa face export?(pantry, shopping list?)
+Trebuie sa fie exportat intr-un format specific?
+Ce tip de informatii trebuie sa fie incluse in export?
+Cum ar trebui sa fie structurat fisierul exportat?
+Trebuie sa avem o lista cu zilele saptamanii si fircare zi sa fie impratita in mic-dejun, pranz, cina si gustari unde utilizatorul sa poata adauga retetele dorite?
