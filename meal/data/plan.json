@@ -112,39 +112,39 @@
   },
   "2025-W42": {
     "Monday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Grilled Cheese Sandwich",
+      "lunch": "Chicken Alfredo Pasta",
+      "dinner": "Simple Hummus"
     },
     "Tuesday": {
-      "breakfast": "Spaghetti Bolognese",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Pancakes",
+      "lunch": "Chicken Curry",
+      "dinner": "Tomato Soup"
     },
     "Wednesday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Tomato Basil Soup",
+      "lunch": "Chili con Carne",
+      "dinner": "Garlic Fried Rice"
     },
     "Thursday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Shakshuka",
+      "lunch": "Chili con Carne",
+      "dinner": "Tomato Basil Soup"
     },
     "Friday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Caesar Salad",
+      "lunch": "French Toast",
+      "dinner": "Beef Stew"
     },
     "Saturday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Margherita Pizza",
+      "lunch": "Beef Stew",
+      "dinner": "Chicken Alfredo Pasta"
     },
     "Sunday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Tomato Soup",
+      "lunch": "Garlic Fried Rice",
+      "dinner": "Spaghetti Carbonara"
     }
   },
   "2026-W53": {
@@ -223,30 +223,19 @@
   },
   "2025-W41": {
     "Monday": {
-      "breakfast": {
-        "name": "Pancakes",
-        "cooked": true,
-        "overrides": {
-          "Flour": 200,
-          "Milk": 300,
-          "Egg": 2,
-          "Sugar": 20
-        },
-        "servings": 4,
-        "quantity": 4
-      },
-      "lunch": "Tomato Soup",
-      "dinner": "Spaghetti Carbonara"
+      "breakfast": "Shakshuka",
+      "lunch": "Pancakes",
+      "dinner": "Spaghetti Bolognese"
     },
     "Tuesday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Spaghetti Carbonara",
+      "lunch": "Garlic Fried Rice",
+      "dinner": "Spaghetti Bolognese"
     },
     "Wednesday": {
-      "breakfast": "-",
-      "lunch": "-",
-      "dinner": "-"
+      "breakfast": "Spaghetti Bolognese",
+      "lunch": "Spaghetti Carbonara",
+      "dinner": "Shakshuka"
     },
     "Thursday": {
       "breakfast": "-",

@@ -45,15 +45,6 @@
     ]
   },
   {
-    "name": "Beef Mince",
-    "unit": "g",
-    "default_quantity": 500,
-    "data_expirare": "24-09-2025",
-    "tags": [
-      "meat-beef"
-    ]
-  },
-  {
     "name": "Pancetta",
     "unit": "g",
     "default_quantity": 150,
@@ -250,5 +241,35 @@
     "tags": [
       "dairy"
     ]
+  },
+  {
+    "name": "Ground beef",
+    "default_quantity": 500,
+    "unit": "g",
+    "data_expirare": "13-10-2025",
+    "tags": [
+      "meat-beef"
+    ],
+    "batch_id": "93f8cd50-d55b-4d9e-bb86-f4333625a4d8"
+  },
+  {
+    "name": "Onion",
+    "default_quantity": 2,
+    "unit": "pcs",
+    "data_expirare": "13-10-2025",
+    "tags": [
+      "vegetables"
+    ],
+    "batch_id": "93f8cd50-d55b-4d9e-bb86-f4333625a4d8"
+  },
+  {
+    "name": "Spaghetti",
+    "default_quantity": 300,
+    "unit": "g",
+    "data_expirare": "13-10-2025",
+    "tags": [
+      "pasta"
+    ],
+    "batch_id": "93f8cd50-d55b-4d9e-bb86-f4333625a4d8"
   }
 ]

@@ -409,5 +409,164 @@
         "exp_date": "13-10-2025"
       }
     ]
+  },
+  {
+    "id": "722ca57c-e588-4dc0-a7b4-9c0848258ad3",
+    "timestamp": "2025-10-06T18:05:55.533015",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "9ebbff52-0b56-40c1-9544-b97477f3de6f",
+    "timestamp": "2025-10-06T18:17:34.809323",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "0f548634-988d-42ac-a8bd-b39dc302c64c",
+    "timestamp": "2025-10-06T18:19:18.429089",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Chicken breast",
+        "quantity": 500,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Coconut milk",
+        "quantity": 400,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Curry paste",
+        "quantity": 50,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Onion",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "47ba06c8-640a-4e22-ad26-f7de944bc4c1",
+    "timestamp": "2025-10-06T18:34:56.511646",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "22ab6fbf-9dce-4d14-b91a-c59beafc0221",
+    "timestamp": "2025-10-06T18:35:55.108060",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "f6319e73-c8d0-4e5b-ba2c-8970b1651bd6",
+    "timestamp": "2025-10-06T18:52:04.943975",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "dc6fa427-bd3a-4df8-a6fd-657280e002d9",
+    "timestamp": "2025-10-06T18:52:31.764692",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "13-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "93f8cd50-d55b-4d9e-bb86-f4333625a4d8",
+    "timestamp": "2025-10-06T20:20:38.344288",
+    "week": 41,
+    "merged": [],
+    "added": [
+      {
+        "name": "Ground beef",
+        "quantity": 500,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Onion",
+        "quantity": 2,
+        "exp_date": "13-10-2025"
+      },
+      {
+        "name": "Spaghetti",
+        "quantity": 300,
+        "exp_date": "13-10-2025"
+      }
+    ]
   }
 ]

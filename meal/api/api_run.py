@@ -499,12 +499,84 @@ try:
     _add_router = getattr(add, 'router', None)
     if _add_router and hasattr(_add_router, 'routes') and hasattr(_add_router, 'include_router'):
         app.include_router(_add_router)
-    elif getattr(add, 'app', None) and hasattr(add.app, 'router'):
-        app.include_router(add.app.router)
-    else:
-        logger.warning("add module router not included: incompatible structure")
-except Exception as _e:  # pragma: no cover
-    logger.error("Failed including add router: %s", _e)
+except Exception:
+    pass
+
+# -------------------- API: Recipes availability (pantry has all ingredients) --------------------
+@app.get('/api/recipes/available')
+def api_recipes_available():
+    """Return list of recipes for which pantry currently has all required ingredient quantities.
+
+    Response JSON structure:
+        {
+          "count": <int>,
+          "total": <int>,
+          "recipes": [ { name, servings, calories, tags, times_possible } ]
+        }
+    """
+    try:
+        from meal.api.routes.recipes import load_recipes
+        from meal.api.routes.pantry import load_ingredients
+        from meal.domain.Recipe import Recipe  # for _normalize_name helper
+    except Exception as e:  # pragma: no cover - defensive import
+        raise HTTPException(status_code=500, detail=f"Import failure: {e}")
+
+    try:
+        recipes = load_recipes()  # list[dict]
+        pantry = load_ingredients()  # list[dict]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Data load error: {e}")
+
+    # Build stock map (normalized name -> total quantity)
+    stock: dict[str, int] = {}
+    for ing in pantry:
+        name = ing.get('name', '')
+        qty = ing.get('default_quantity', 0)
+        try:
+            qty_int = int(qty)
+        except Exception:
+            qty_int = 0
+        norm = Recipe._normalize_name(name) if hasattr(Recipe, '_normalize_name') else name.strip().lower()
+        stock[norm] = stock.get(norm, 0) + qty_int
+
+    def has_all_and_times(recipe: dict) -> tuple[bool, int]:
+        times_min = None
+        for ing in recipe.get('ingredients', []):
+            rname = ing.get('name', '')
+            required = ing.get('default_quantity', 0)
+            try:
+                required_int = int(required)
+            except Exception:
+                required_int = 0
+            if required_int <= 0:
+                # skip zero/invalid requirement so it doesn't affect calculation
+                continue
+            norm_r = Recipe._normalize_name(rname) if hasattr(Recipe, '_normalize_name') else rname.strip().lower()
+            avail_qty = stock.get(norm_r, 0)
+            if avail_qty < required_int:
+                return False, 0
+            possible_here = avail_qty // required_int if required_int else 0
+            times_min = possible_here if times_min is None else min(times_min, possible_here)
+        # If recipe has no ingredients times_min can default to 0 -> set to 0
+        return True, (times_min if times_min is not None else 0)
+
+    available = []
+    for r in recipes:
+        ok, times_possible = has_all_and_times(r)
+        if ok:
+            available.append({
+                'name': r.get('name'),
+                'servings': r.get('servings'),
+                'calories': r.get('calories_per_serving') or r.get('caloriesPerServing'),
+                'tags': r.get('tags', []),  # keep for backward compatibility (UI may ignore)
+                'times_possible': times_possible
+            })
+
+    return {
+        'count': len(available),
+        'total': len(recipes),
+        'recipes': available
+    }
 
 # -------------------- API: Shopping List (JSON) --------------------
 @app.get('/api/shopping-list')
@@ -1041,9 +1113,10 @@ class RandomizeCustomRequest(BaseModel):
     year: int
     days: list[str] | None = None
     replace_existing: bool = False
+    only_available: bool = False
 
 @app.post("/randomize_custom")
 def randomize_custom(payload: RandomizeCustomRequest):
     repo = PlanRepository()
-    modified = repo.randomize_custom(payload.week, payload.year, payload.days, payload.replace_existing)
+    modified = repo.randomize_custom(payload.week, payload.year, payload.days, payload.replace_existing, payload.only_available)
     return {"modified": modified, "week": payload.week, "year": payload.year}

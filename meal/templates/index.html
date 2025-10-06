@@ -204,6 +204,7 @@
             <div style="display:flex; gap:10px;">
                 <button id="resetWeek" class="main-btn small">Reset week</button>
                 <button id="randomizeWeek" class="main-btn small">Randomize</button>
+                <button id="availableRecipes" class="main-btn small">Available</button>
                 <button id="exportPDF" class="main-btn small">Export PDF</button>
             </div>
         </div>
@@ -303,6 +304,35 @@
     </div>
 </div>
 
+<!-- Available Recipes Modal -->
+<div id="availableModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:4100; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:20px 22px 18px 22px; border-radius:12px; width:520px; max-width:95%; font-size:.8rem; box-shadow:0 10px 28px rgba(0,0,0,.35); max-height:80%; display:flex; flex-direction:column;">
+     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="margin:0; font-size:1rem;">Rețete posibile (disponibile)</h3>
+        <button id="availableClose" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+     </div>
+     <div id="availableLoading" style="font-size:.65rem; color:#555; display:none;">Se încarcă...</div>
+     <div id="availableError" style="font-size:.65rem; color:#c62828; display:none;">Eroare la încărcare.</div>
+     <div style="overflow:auto; flex:1;" id="availableContent">
+        <table style="width:100%; border-collapse:collapse; font-size:.7rem;">
+          <thead>
+            <tr style="background:#2e7d32; color:#fff;">
+              <th style="padding:6px 8px; text-align:left;">Nume</th>
+              <th style="padding:6px 8px; text-align:right;">Servings</th>
+              <th style="padding:6px 8px; text-align:right;">Cal/serv</th>
+              <th style="padding:6px 8px; text-align:right;">De câte ori</th>
+            </tr>
+          </thead>
+          <tbody id="availableTbody"></tbody>
+        </table>
+     </div>
+     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-size:.6rem;">
+        <span id="availableSummary" style="opacity:.75;">&nbsp;</span>
+        <button id="availableCloseFooter" style="background:#777; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:.65rem;">Închide</button>
+     </div>
+  </div>
+</div>
+
 <!-- Advanced Randomize Modal -->
 <div id="advRandModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:4000; align-items:center; justify-content:center;">
   <div style="background:#fff; padding:20px 22px 18px 22px; border-radius:12px; width:420px; max-width:95%; font-size:.8rem; box-shadow:0 10px 28px rgba(0,0,0,.35);">
@@ -321,6 +351,11 @@
        <div style="margin-bottom:10px;">
          <label style="display:flex; align-items:center; gap:6px;">
            <input type="checkbox" id="arReplaceExisting"> <span>Înlocuiește și rețetele deja setate (non-cooked)</span>
+         </label>
+       </div>
+       <div style="margin-bottom:10px;">
+         <label style="display:flex; align-items:center; gap:6px;">
+           <input type="checkbox" id="arOnlyAvailable"> <span>Doar rețete disponibile (am toate ingredientele)</span>
          </label>
        </div>
        <div style="font-size:.65rem; line-height:1.3; background:#fff8e1; padding:8px 10px; border:1px solid #ffe082; border-radius:6px; margin-bottom:12px;">
@@ -432,6 +467,174 @@
     .slot-action-menu .item:hover { background:#f5f5f5; }
     .slot-action-menu .item.danger { color:#c62828; }
     .slot-action-menu .item.disabled { opacity:.45; cursor:default; }
+
+    /* Minor tweaks for available recipes modal scrollbars */
+    #availableContent::-webkit-scrollbar { width:6px; }
+    #availableContent::-webkit-scrollbar-thumb { background:#bbb; border-radius:4px; }
+    #availableContent::-webkit-scrollbar-thumb:hover { background:#999; }
+
+    /* Cook Panel Modal */
+    #cookPanel {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    .cook-panel-content {
+      background: #fff;
+      width: 480px;
+      max-width: 90%;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      max-height: 80%;
+      overflow-y: auto;
+    }
+    .cook-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      border-bottom: 1px solid #eee;
+    }
+    .cook-panel-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #333;
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+    .close-btn:hover {
+      color: #333;
+    }
+    .cook-panel-body {
+      padding: 16px;
+      flex: 1;
+    }
+    .cook-panel-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #eee;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .finish-btn, .cancel-btn {
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s;
+    }
+    .finish-btn:hover {
+      background: #388e3c;
+    }
+    .cancel-btn {
+      background: #f44336;
+    }
+    .cancel-btn:hover {
+      background: #d32f2f;
+    }
+    .cook-ingredients-wrapper {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 12px;
+    }
+    .cook-ing-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .cook-ing-table th {
+      background: #4caf50;
+      color: #fff;
+      padding: 8px 10px;
+      position: sticky;
+      top: 0;
+    }
+    .cook-ing-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .cook-ing-table tbody tr:hover {
+      background: #f9fff6;
+    }
+    .cook-ing-table input {
+      width: 70px;
+      padding: 4px 6px;
+      font-size: 0.75rem;
+    }
+    .finish-btn {
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .finish-btn:hover {
+      background: #449d48;
+    }
+    .cancel-btn {
+      background: #777;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .cancel-btn:hover {
+      background: #5a5a5a;
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #444;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+    .cook-panel-msg {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #fff3cd;
+      color: #8a6d3b;
+    }
+    .cook-btn {
+      margin-top: 5px;
+      background: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 4px 10px;
+      font-size: .65rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cook-btn:hover {
+      background: #3f8f43;
+    }
 </style>
 
 <!-- Cook Panel Modal -->
