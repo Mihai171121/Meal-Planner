@@ -346,6 +346,11 @@ def camara_page(request: Request):
          "expiring_window": DAYS_BEFORE_EXPIRY}
     )
 
+@app.get("/pantry", response_class=HTMLResponse)
+def pantry_page_alias(request: Request):
+    # Alias for English route; reuse the same view
+    return camara_page(request)
+
 @app.get("/camara/edit", response_class=HTMLResponse)
 def camara_edit_page(request: Request):
     ingredients = load_ingredients()
@@ -359,6 +364,11 @@ def camara_edit_page(request: Request):
             "time": _ts()
         }
     )
+
+@app.get("/pantry/edit", response_class=HTMLResponse)
+def pantry_edit_page_alias(request: Request):
+    # Alias for English route; reuse the same view
+    return camara_edit_page(request)
 
 # -------------------- API: Pantry Alerts (polled by frontend) --------------------
 @app.get('/api/pantry/alerts')

@@ -51,6 +51,9 @@ class Pantry:
         '''
         Updates the quantity of a specific ingredient in the pantry.
         '''
+        if new_quantity < 0:
+            raise ValueError(f"Quantity cannot be negative: {new_quantity}")
+
         for item in self.items:
             if item.name == ingredient_name:
                 # Replace absolute set with direct assignment semantics (new total) - keep original pattern

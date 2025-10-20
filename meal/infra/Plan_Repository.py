@@ -97,6 +97,11 @@ class PlanRepository:
           - Uniqueness rule: A recipe can appear at most once per day after this operation among the slots that were (re)assigned.
             Existing duplicates that are not eligible for replacement (because we only fill empty) are left as-is.
           - If we run out of unique recipes to place, remaining target slots become '-'.
+
+        --- Changes in this version ---
+        - Enforce strict per-day uniqueness: for both randomize_week and randomize_custom we first deduplicate
+          existing non-cooked string slots (keep first occurrence, blank duplicates to '-') and then proceed
+          with the existing filling logic while tracking used names so no recipe is placed twice in the same day.
         """
         plan = self.get_week_plan(week_number, year)
         recipes = load_recipes()
@@ -118,6 +123,28 @@ class PlanRepository:
                 continue
             if day_date < today:
                 continue
+
+            # --- New: strict per-day deduplication for non-cooked slots ---
+            # If the same recipe appears multiple times in non-cooked slots, keep only the first occurrence
+            # and set the rest to '-'. This enforces the strict rule: never the same recipe twice in a day.
+            slots = ("breakfast", "lunch", "dinner")
+            seen = set()
+            for slot in slots:
+                val = meals.get(slot)
+                # Skip cooked slots entirely
+                if isinstance(val, dict) and val.get("cooked"):
+                    # if cooked has a name, register it as used
+                    if isinstance(val.get("name"), str) and val.get("name"):
+                        seen.add(val.get("name"))
+                    continue
+                if isinstance(val, str) and val not in ("-", "", None):
+                    if val in seen:
+                        # duplicate -> blank it out
+                        meals[slot] = "-"
+                    else:
+                        seen.add(val)
+            # --- End deduplication ---
+
             # Track used recipes for this day (strings) among slots we keep
             used = set()
             if fill_only_empty:
@@ -230,6 +257,30 @@ class PlanRepository:
                         candidate_slots.append(slot)
             if not candidate_slots:
                 continue
+
+            # --- New: strict per-day deduplication for non-cooked slots ---
+            # Remove duplicates among non-cooked string slots by keeping first occurrence and blanking others.
+            slots = ("breakfast", "lunch", "dinner")
+            seen = set()
+            for slot in slots:
+                val = meals.get(slot)
+                # Skip cooked slots and register cooked names
+                if isinstance(val, dict) and val.get("cooked"):
+                    if isinstance(val.get("name"), str) and val.get("name"):
+                        seen.add(val.get("name"))
+                    continue
+                if isinstance(val, str) and val not in ("-", "", None):
+                    if val in seen:
+                        # duplicate -> blank it out; if this slot is in candidate_slots, it's considered modified
+                        if meals.get(slot) != "-":
+                            meals[slot] = "-"
+                            # Count as modification only if this slot was considered for modification
+                            if slot in candidate_slots:
+                                modified += 1
+                    else:
+                        seen.add(val)
+            # --- End deduplication ---
+
             # Build initial used set from slots we are NOT modifying (to preserve uniqueness) + cooked names if any
             used = set()
             for slot in ("breakfast", "lunch", "dinner"):

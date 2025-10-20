@@ -1,5 +1,5 @@
 body.bg {
-    /* Revert la fundalul original cu imagine + cover */
+    /* Revert to original background with image + cover */
     margin: 0;
     padding: 0;
     min-height: 100vh;
@@ -37,9 +37,8 @@ h1 {
     width: 100%;
 }
 .overlay {
-    /* Revert: transparent albicios, fara chenar */
-    background: rgba(255,255,255,0.8);
-    /* remove border & extra shadow adaugate anterior */
+    /* Revert: whitish transparent background, no frame */
+    /* remove border & extra shadow added earlier */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -174,7 +173,7 @@ h1 {
     width: 100%;
 }
 .pantry-table {
-    /* Revert: fara border explicit - doar shadow-ul existent */
+    /* Revert: no explicit border - keep the existing shadow only */
     background: rgba(255,255,255,0.95);
     padding: 20px;
     border-radius: 12px;
@@ -363,13 +362,13 @@ body.pantry-page:not(.has-expiry) .pantry-tables-container { margin-right:0; }
   body.pantry-page .pantry-table { max-width:100%; }
 }
 /* ====== CLEAN LAYOUT SECTION FOR PANTRY PAGE (single source of truth) ====== */
-/* Stergem precedentele blocuri multiple pentru .pantry-grid / .pantry-col-* / axis.
-   Ramane doar acest set final, mai ingust si simetric. */
+/* Remove previous multiple blocks for .pantry-grid / .pantry-col-* / axis.
+   Keep only this final, narrower and symmetric set. */
 /* (All older blocks for: .pantry-grid with 780/760/740 widths, .pantry-col-left/right spacing, and enforced overrides have been removed.) */
 body.pantry-page .pantry-grid {
-  --table-width: 520px;   /* latimea fiecarui panou */
-  --axis-width: 2px;      /* grosimea axei */
-  --axis-gap: 24px;       /* distanta intre axa si fiecare panou */
+  --table-width: 520px;   /* width of each panel */
+  --axis-width: 2px;      /* axis thickness */
+  --axis-gap: 24px;       /* gap between axis and each panel */
   display: grid;
   grid-template-columns: var(--table-width) var(--axis-width) var(--table-width);
   column-gap: var(--axis-gap);
@@ -400,7 +399,7 @@ body.pantry-page .pantry-grid .pantry-table.equal-size table { width:100%; table
   body.pantry-page .pantry-grid .pantry-table.equal-size { max-width:620px; }
   #view-ingredients-table th.exp-col, #view-ingredients-table td.exp { width:140px; }
 }
-/* Linie vizuala de debug (dezactivata): */
+/* Debug visual line (disabled): */
 /* body.pantry-page .pantry-grid { outline:1px dashed #d33; } */
 /* ====== END CLEAN LAYOUT SECTION ====== */
 

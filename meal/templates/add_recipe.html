@@ -19,21 +19,21 @@
       background-attachment: fixed;
       min-height: 100vh;
       padding: 20px;
-      position: relative; /* necesar pentru overlay */
+      position: relative; /* required for overlay */
     }
 
-    /* Overlay întunecat */
+    /* Dark overlay */
     body::before {
       content: "";
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5); /* 0.5 = 50% opacitate */
+      background: rgba(0,0,0,0.5); /* 0.5 = 50% opacity */
       z-index: 0;
     }
 
     .container {
       position: relative;
-      z-index: 1; /* formularul deasupra overlay-ului */
+      z-index: 1; /* form above the overlay */
       max-width: 800px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.97);
@@ -280,7 +280,7 @@
     const previewImg = document.getElementById('previewImg');
     const imageName = document.getElementById('imageName');
 
-    // Upload imagine
+    // Image upload
     uploadArea.addEventListener('click', () => fileInput.click());
     uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
     uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));

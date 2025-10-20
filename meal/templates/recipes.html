@@ -81,7 +81,7 @@
      grid.dataset.cols = String(c);
      select.value = String(c);
      localStorage.setItem('recipesCols', c);
-     // actualizează URL fără reload (păstrăm și filtrul tag dacă există)
+     // update URL without reload (keep the tag filter if present)
      qs.set('cols', c);
      const tagSel = document.getElementById('tag');
      if(tagSel && tagSel.value) qs.set('tag', tagSel.value); else qs.delete('tag');

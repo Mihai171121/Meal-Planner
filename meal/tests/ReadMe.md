@@ -1,17 +1,17 @@
-## Testare (tests/)
+## Testing (tests/)
 
-- **Aici scrii testele (Pytest).**
+- This is where you write tests (Pytest).
 
-- **Unit Tests → entități, servicii individuale.**
+- Unit Tests → entities, individual services.
 
-- **ex: scaling servings la Recipe**
+- ex: scaling servings in Recipe
 
-- **ex: pantry decrement după gătit**
+- ex: pantry decrement after cooking
 
-- **Integration Tests → cum colaborează repo + servicii**
+- Integration Tests → how repositories + services collaborate
 
-- **ex: log cook → pantry updated → alert triggered**
+- ex: log cook → pantry updated → alert triggered
 
-- **Scenario Tests → rulezi un flux complet**
+- Scenario Tests → end-to-end flow
 
-- **import rețete → creezi plan → build shopping list → cook meal → leftovers**
+- ex: import recipes → create plan → build shopping list → cook meal → leftovers

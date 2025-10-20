@@ -4,10 +4,19 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import httpx
 from fastapi import FastAPI
+import logging
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
-API_KEY = "5ff4f96c305e44fd8a8bb9d94278e058"
+# Use configuration instead of hardcoded API key
+try:
+    from meal.utilities.config import SPOONACULAR_API_KEY
+    API_KEY = SPOONACULAR_API_KEY
+except ImportError:
+    # Fallback for backwards compatibility
+    API_KEY = "5ff4f96c305e44fd8a8bb9d94278e058"
+    logger.warning("Using fallback API key. Consider using config.py for better security.")
 
 # === Paths corecte ===
 HERE = os.path.dirname(os.path.abspath(__file__))  # .../meal/api/routes
@@ -114,7 +123,7 @@ async def add_recipe(
             )
         data = response.json()
 
-    # --- extragem macro-urile ---
+    # --- extract macros ---
     macros = {}
     if "nutrition" in data and "nutrients" in data["nutrition"]:
         for n in data["nutrition"]["nutrients"]:
@@ -136,7 +145,7 @@ async def add_recipe(
         },
     }
 
-    # --- salvăm în JSON ---
+    # --- save to JSON ---
     recipes.append(recipe)
     _atomic_write(recipes)
 

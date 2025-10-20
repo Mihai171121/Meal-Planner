@@ -11,7 +11,7 @@ function closeModal(day, meal) {
 
 // ---------- Select recipe inside modal ----------
 function selectRecipe(name, image, day, meal) {
-  // încercă să găsești preview-ul (img sau placeholder)
+  // Try to locate the preview element (img or placeholder)
   let preview =
     document.getElementById(`recipePreview-${day}-${meal}`) ||
     document.querySelector(
@@ -19,7 +19,7 @@ function selectRecipe(name, image, day, meal) {
     );
 
   if (!preview) {
-    // fallback: creăm direct o imagine în stânga modalului
+    // Fallback: create an image directly in the left column of the modal
     const left = document.querySelector(`#${day}-${meal}-popup .recipe-modal-left`);
     if (left) {
       left.innerHTML = `<img id="recipePreview-${day}-${meal}" src="/static/pictures/${image}" alt="${name}" style="max-width:250px;border-radius:10px;">`;
@@ -28,11 +28,11 @@ function selectRecipe(name, image, day, meal) {
     preview.src = "/static/pictures/" + image;
     preview.alt = name;
   } else {
-    // placeholder -> îl înlocuim cu img
+    // Placeholder -> replace it with the image
     preview.outerHTML = `<img id="recipePreview-${day}-${meal}" src="/static/pictures/${image}" alt="${name}" style="max-width:250px;border-radius:10px;">`;
   }
 
-  // setează hidden input-ul cu rețeta aleasă
+  // Set the hidden input with the chosen recipe
   const input = document.getElementById(`selectedRecipe-${day}-${meal}`);
   if (input) input.value = name;
 
@@ -69,7 +69,7 @@ function selectRecipe(name, image, day, meal) {
 
 // ---------- Close modal on outside click (optional) ----------
 window.onclick = function (event) {
-  // dacă vrei să închizi când apeși pe overlay-ul intern, păstrează; altfel poți elimina
+  // If you want to close when clicking the internal overlay, keep this; otherwise you can remove it
   const modals = document.querySelectorAll(".popup");
   modals.forEach((m) => {
     if (event.target === m) m.style.display = "none";
@@ -86,21 +86,21 @@ function toggleWeekDropdown() {
   }
 }
 
-// Creează lista de săptămâni permise
+// Build the list of allowed weeks
 function populateWeekList() {
   const weekList = document.getElementById("weekList");
   if (!weekList) return null;
   weekList.innerHTML = "";
 
-  // interval permis (păstrează dacă așa vrei)
-  const ALLOWED_START = new Date(2025, 8, 1); // 1 sept 2025
+  // Allowed interval (adjust as you like)
+  const ALLOWED_START = new Date(2025, 8, 1); // 1 Sep 2025
   const ALLOWED_END   = new Date(2026, 11, 31);
 
-  // normalizează la 00:00
+  // Normalize to 00:00
   const today = new Date();
   today.setHours(0,0,0,0);
 
-  // mută începutul la prima Luni >= ALLOWED_START
+  // Move to the first Monday >= ALLOWED_START
   const d = new Date(ALLOWED_START);
   while (d.getDay() !== 1) d.setDate(d.getDate() + 1);
 
@@ -122,7 +122,7 @@ function populateWeekList() {
     btn.onclick = () => selectWeek(new Date(monday));
 
     if (isCurrent && !defaultMonday) {
-      defaultMonday = new Date(monday); // memorează săptămâna curentă
+      defaultMonday = new Date(monday); // remember current week
     }
 
     weekList.appendChild(btn);
@@ -152,7 +152,7 @@ function selectWeek(mondayDate) {
   if (dropdown) dropdown.style.display = "none";
 
   const start = toYMD(mondayDate);
-  window.CURRENT_MONDAY_YMD = start; // memorăm Monday curent
+  window.CURRENT_MONDAY_YMD = start; // remember current Monday
   fetch(`/get_week?start=${encodeURIComponent(start)}`, { cache: "no-store" })
     .then((r) => {
       if (!r.ok) throw new Error("Week out of allowed range or bad date");
@@ -352,25 +352,25 @@ function updateTable(data) {
 
   // 3) push week/year to every modal form so Save writes to the correct week
   if (typeof week !== "undefined" && typeof year !== "undefined") {
-    // actualizează week/year în toate formularele
+    // Update week/year in all forms
     document.querySelectorAll('form.recipe-modal input[name="week"]').forEach(i=>i.value=week);
     document.querySelectorAll('form.recipe-modal input[name="year"]').forEach(i=>i.value=year);
     window.CURRENT_WEEK = week;
     window.CURRENT_YEAR = year; // ensure year tracked for cook API
     const slLink = document.getElementById('shoppingListLink');
     if(slLink){ slLink.href = `/shopping-list?week=${week}`; }
-    // NEW: sincronizează și panoul de statistici (Nutrition) cu noua săptămână
+    // NEW: also sync the Nutrition panel with the new week
     const statsPanel = document.getElementById('statsPanel');
     if(statsPanel){
       statsPanel.setAttribute('data-week', week);
       statsPanel.setAttribute('data-year', year);
-      // Dacă există funcția globală de refresh, o chemăm pentru update imediat
+      // If the global refresh function exists, call it for immediate update
       if(typeof window.refreshNutritionPanel === 'function'){
         window.refreshNutritionPanel();
       }
     }
   }
-  // După actualizare, reîmprospătăm badge-ul pentru săptămâna selectată
+  // After update, refresh the badge for the selected week
   if(typeof window.CURRENT_WEEK !== 'undefined') {
     refreshShoppingListBadge(window.CURRENT_WEEK);
   }
@@ -386,7 +386,7 @@ if (defaultMonday) {
     weekDisplay.textContent =
       `${defaultMonday.toLocaleDateString()} - ${sunday.toLocaleDateString()} — this week`;
   }
-  selectWeek(defaultMonday); // face fetch către /get_week și actualizează tabelul
+  selectWeek(defaultMonday); // fetch /get_week and update the table
 }
 
 // ---------- Shopping List badge refresh ----------
@@ -439,15 +439,15 @@ function hookMealForms(){
     form.addEventListener('submit', async (ev) => {
       ev.preventDefault();
       const fd = new FormData(form);
-      // Build payload for JSON endpoint when multipart not present; dar aici folosim POST normal -> fallback redirect
+      // Build payload for JSON endpoint when multipart not present; here we use normal POST -> fallback redirect
       try {
         const resp = await fetch('/update_meal', { method:'POST', body: fd });
-        // Server face redirect (303) -> nu vrem reload pagina; ignorăm conținutul, refacem doar tbody și badge
-        // Refacem doar săptămâna curentă (week/year din form)
+        // Server issues redirect (303) -> avoid full page reload; re-fetch only tbody and badge
+        // Rebuild only the current week (week/year from form)
         const week = fd.get('week');
         const year = fd.get('year');
         if(week && year){
-          // re-fetch real plan (nu bazat pe optimistic) folosind monday stored
+          // re-fetch real plan (not based on optimistic UI) using stored Monday
           const monday = window.CURRENT_MONDAY_YMD;
           if(monday){
              try {
@@ -455,7 +455,7 @@ function hookMealForms(){
                if(r2.ok){
                  const json = await r2.json();
                  updateTable(json);
-                 // După ce planul a fost refăcut, forțăm și refresh la nutrition (real-time)
+                 // After plan was rebuilt, force a refresh on the nutrition panel (real-time)
                  if(typeof window.refreshNutritionPanel === 'function'){
                    window.refreshNutritionPanel();
                  }
@@ -467,11 +467,11 @@ function hookMealForms(){
       } catch(err){
         console.error('Update meal failed', err);
       }
-      // Închide modalul
+      // Close the modal
       const day = fd.get('day');
       const meal = fd.get('meal');
       if(day && meal){ closeModal(day, meal); }
-      // Actualizează vizual slotul local (optimistic)
+      // Optimistically update the local slot UI
       const recipe = fd.get('recipe');
       if(day && meal && recipe){
         const slot = document.getElementById(`slot-${day}-${meal}`);
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshShoppingListBadge();
 });
 
-// Dacă ulterior se regenerează tbody (ex: selectWeek), reatașăm hook-urile
+// If later the tbody gets regenerated (e.g., selectWeek), re-attach hooks
 const observer = new MutationObserver((mutList) => {
   for(const m of mutList){
     if(m.type === 'childList'){

@@ -13,8 +13,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;     /* centrează pe verticală */
-  justify-content: center; /* centrează pe orizontală */
+  align-items: center;     /* center vertically */
+  justify-content: center; /* center horizontally */
 }
 
 .recipe-modal-left img {
@@ -89,7 +89,7 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0.5);
-  display: none;           /* se afișează prin JS (flex) */
+  display: none;           /* shown by JS (flex) */
   align-items: center;
   justify-content: center;
 }
@@ -133,7 +133,7 @@
   font-size: 0.9rem;
   backdrop-filter: blur(2px);
   z-index: 30;
-  left: auto !important; /* forțează plasarea în dreapta */
+  left: auto !important; /* force placement on the right */
 }
 
 .expiry-header {

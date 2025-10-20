@@ -40,7 +40,7 @@
       const data = await resp.json();
       const list = data.recipes || [];
       if(list.length===0){
-        availTbody.innerHTML = '<tr><td colspan="4" style="padding:8px; font-size:.7rem; text-align:center; opacity:.7;">Nicio rețetă disponibilă.</td></tr>';
+        availTbody.innerHTML = '<tr><td colspan="4" style="padding:8px; font-size:.7rem; text-align:center; opacity:.7;">No available recipes.</td></tr>';
       } else {
         const frag = document.createDocumentFragment();
         list.forEach(r=>{
@@ -54,7 +54,7 @@
         availTbody.appendChild(frag);
       }
       if(availSummary){
-        availSummary.textContent = `${data.count || 0} / ${data.total || list.length} rețete disponibile`;
+        availSummary.textContent = `${data.count || 0} / ${data.total || list.length} available recipes`;
       }
     } catch(err){
       console.error(err);

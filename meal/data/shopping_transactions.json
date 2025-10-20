@@ -568,5 +568,41 @@
         "exp_date": "13-10-2025"
       }
     ]
+  },
+  {
+    "id": "25da32c0-642a-41b3-9581-f8e271382e48",
+    "timestamp": "2025-10-18T18:58:36.127289",
+    "week": 42,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "25-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "25-10-2025"
+      }
+    ]
+  },
+  {
+    "id": "25d11532-35a8-4a5d-a217-f46bde762f61",
+    "timestamp": "2025-10-18T19:14:14.347474",
+    "week": 42,
+    "merged": [],
+    "added": [
+      {
+        "name": "Bell pepper",
+        "quantity": 1,
+        "exp_date": "25-10-2025"
+      },
+      {
+        "name": "Broccoli",
+        "quantity": 200,
+        "exp_date": "25-10-2025"
+      }
+    ]
   }
 ]
